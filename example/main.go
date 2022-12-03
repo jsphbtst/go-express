@@ -2,13 +2,22 @@ package main
 
 import (
 	"encoding/json"
+	"log"
 	"net/http"
 
 	"github.com/jsphbtst/go-express"
 )
 
+func LogGetRedirectMiddleware(w http.ResponseWriter, r *http.Request) {
+	path := r.URL.Path
+	if path == "/redirect" && r.Method == http.MethodGet {
+		log.Println("REDIRECT URL IDK MAN")
+	}
+}
+
 func main() {
 	app := express.New()
+	app.Use(LogGetRedirectMiddleware)
 
 	app.Get("/", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
