@@ -13,12 +13,14 @@ type Server struct {
 
 type GenericResponse map[string]string
 
+// just so there's semantic difference for the reader
 type Handler = func(http.ResponseWriter, *http.Request)
 
 type Route map[string]Handler
 
 type Express struct {
 	routes       StringSet
+	middlewares  []Handler
 	getRoutes    StringSet
 	getHandlers  Route
 	postRoutes   StringSet
@@ -36,11 +38,16 @@ func response404Handler(w http.ResponseWriter, r *http.Request) {
 func New() *Express {
 	return &Express{
 		routes:       []string{},
+		middlewares:  [](func(http.ResponseWriter, *http.Request)){},
 		getRoutes:    []string{},
 		postRoutes:   []string{},
 		getHandlers:  make(Route),
 		postHandlers: make(Route),
 	}
+}
+
+func (app *Express) Use(middleware Handler) {
+	app.middlewares = append(app.middlewares, middleware)
 }
 
 func (app *Express) Get(pathname string, handler Handler) {
@@ -57,6 +64,10 @@ func (app *Express) Post(pathname string, handler Handler) {
 
 func (app *Express) Listen(port int) {
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		for _, middleware := range app.middlewares {
+			middleware(w, r)
+		}
+
 		currentPath := r.URL.Path
 		log.Printf("%s `%s`\n", r.Method, currentPath)
 
