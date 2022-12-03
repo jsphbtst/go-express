@@ -7,26 +7,6 @@ import (
 	"net/http"
 )
 
-type Server struct {
-	*http.Server
-}
-
-type GenericResponse map[string]string
-
-// just so there's semantic difference for the reader
-type Handler = func(http.ResponseWriter, *http.Request)
-
-type Route map[string]Handler
-
-type Express struct {
-	routes       StringSet
-	middlewares  []Handler
-	getRoutes    StringSet
-	getHandlers  Route
-	postRoutes   StringSet
-	postHandlers Route
-}
-
 func response404Handler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	// note to self: this goes strictly AFTER else it does not
@@ -46,8 +26,8 @@ func New() *Express {
 	}
 }
 
-func (app *Express) Use(middleware Handler) {
-	app.middlewares = append(app.middlewares, middleware)
+func (app *Express) Use(handler Handler) {
+	app.middlewares = append(app.middlewares, handler)
 }
 
 func (app *Express) Get(pathname string, handler Handler) {
