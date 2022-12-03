@@ -7,24 +7,6 @@ import (
 	"net/http"
 )
 
-type Server struct {
-	*http.Server
-}
-
-type GenericResponse map[string]string
-
-type Handler = func(http.ResponseWriter, *http.Request)
-
-type Route map[string]Handler
-
-type Express struct {
-	routes       StringSet
-	getRoutes    StringSet
-	getHandlers  Route
-	postRoutes   StringSet
-	postHandlers Route
-}
-
 func response404Handler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	// note to self: this goes strictly AFTER else it does not
@@ -36,11 +18,16 @@ func response404Handler(w http.ResponseWriter, r *http.Request) {
 func New() *Express {
 	return &Express{
 		routes:       []string{},
+		middlewares:  [](func(http.ResponseWriter, *http.Request)){},
 		getRoutes:    []string{},
 		postRoutes:   []string{},
 		getHandlers:  make(Route),
 		postHandlers: make(Route),
 	}
+}
+
+func (app *Express) Use(handler Handler) {
+	app.middlewares = append(app.middlewares, handler)
 }
 
 func (app *Express) Get(pathname string, handler Handler) {
@@ -57,9 +44,11 @@ func (app *Express) Post(pathname string, handler Handler) {
 
 func (app *Express) Listen(port int) {
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		currentPath := r.URL.Path
-		log.Printf("%s `%s`\n", r.Method, currentPath)
+		for _, middleware := range app.middlewares {
+			middleware(w, r)
+		}
 
+		currentPath := r.URL.Path
 		isPathExists := app.routes.Contains(currentPath)
 		if !isPathExists {
 			response404Handler(w, r)
