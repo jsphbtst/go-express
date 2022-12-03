@@ -16,9 +16,9 @@ func SampleCustomMiddleware(config express.Config) express.Handler {
 	}
 }
 
-func PostIndex(w http.ResponseWriter, r *http.Request) {
+func GetIndex(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(express.GenericResponse{"message": "POST hello world"})
+	json.NewEncoder(w).Encode(express.GenericResponse{"message": "GET hello world"})
 }
 
 func main() {
@@ -32,16 +32,31 @@ func main() {
 	app.Use(express.LogPathAccess(nil))
 	app.Use(SampleCustomMiddleware(nil))
 
-	app.Get("/", func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(express.GenericResponse{"message": "GET hello world"})
-	})
+	app.Get("/", GetIndex)
 
-	app.Post("/", PostIndex)
-
-	app.Get("/messages", func(w http.ResponseWriter, r *http.Request) {
+	app.Get("/api/messages", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		json.NewEncoder(w).Encode(express.GenericResponse{"message": "GET messages"})
+	})
+
+	app.Post("/api/messages", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(express.GenericResponse{"message": "POST messages"})
+	})
+
+	app.Put("/api/messages", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(express.GenericResponse{"message": "PUT messages"})
+	})
+
+	app.Patch("/api/messages", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(express.GenericResponse{"message": "PATCH messages"})
+	})
+
+	app.Delete("/api/messages", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(express.GenericResponse{"message": "DELETE messages"})
 	})
 
 	app.Listen(5200)

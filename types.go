@@ -16,10 +16,21 @@ type GenericResponse = map[string]string
 type Route = map[string]Handler
 
 type Express struct {
-	routes       StringSet
-	middlewares  []Handler
-	getRoutes    StringSet
-	getHandlers  Route
+	routes      StringSet
+	middlewares []Handler
+
+	getRoutes   StringSet
+	getHandlers Route
+
 	postRoutes   StringSet
 	postHandlers Route
+
+	putRoutes   StringSet
+	putHandlers Route
+
+	patchRoutes   StringSet
+	patchHandlers Route
+
+	deleteRoutes   StringSet
+	deleteHandlers Route
 }

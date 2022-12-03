@@ -2,6 +2,8 @@
 
 This is currently an experiment to see how much of `express.js`, an HTTP server library for `Node.js` apps, I can copy. Yes, I know `go-fiber` exists, but I want to build this solely with net/http.
 
+Currently supported HTTP methods are `GET`, `POST`, `PUT`, `PATCH`, and `DELETE`.
+
 ## Sample Code
 
 Check out `example/main.go`, but in summary, this should feel much like Express.
