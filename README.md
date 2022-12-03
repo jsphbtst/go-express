@@ -7,6 +7,13 @@ This is currently an experiment to see how much of `express.js`, an HTTP server 
 Check out `example/main.go`, but in summary, this should feel much like Express.
 
 ```
+func PostIndex(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(express.GenericResponse{"message": "POST hello world"})
+}
+
+...
+
 app := express.New()
 
 app.Use(express.Cors(
@@ -20,10 +27,7 @@ app.Get("/", func(w http.ResponseWriter, r *http.Request) {
   json.NewEncoder(w).Encode(express.GenericResponse{"message": "GET hello world"})
 })
 
-app.Post("/", func(w http.ResponseWriter, r *http.Request) {
-  w.Header().Set("Content-Type", "application/json")
-  json.NewEncoder(w).Encode(express.GenericResponse{"message": "POST hello world"})
-})
+app.Post("/", PostIndex)
 
 app.Listen(5200)
 ```
