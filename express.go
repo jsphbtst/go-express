@@ -17,7 +17,7 @@ type Handler = func(http.ResponseWriter, *http.Request)
 
 type Route map[string]Handler
 
-type ExpressObject struct {
+type Express struct {
 	routes       StringSet
 	getRoutes    StringSet
 	getHandlers  Route
@@ -33,8 +33,8 @@ func response404Handler(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(GenericResponse{"message": "Error"})
 }
 
-func New() *ExpressObject {
-	return &ExpressObject{
+func New() *Express {
+	return &Express{
 		routes:       []string{},
 		getRoutes:    []string{},
 		postRoutes:   []string{},
@@ -43,21 +43,23 @@ func New() *ExpressObject {
 	}
 }
 
-func (app *ExpressObject) Get(pathname string, handler Handler) {
+func (app *Express) Get(pathname string, handler Handler) {
 	app.getHandlers[pathname] = handler
 	app.routes.Add(pathname)
 	app.getRoutes.Add(pathname)
 }
 
-func (app *ExpressObject) Post(pathname string, handler Handler) {
+func (app *Express) Post(pathname string, handler Handler) {
 	app.postHandlers[pathname] = handler
 	app.routes.Add(pathname)
 	app.postRoutes.Add(pathname)
 }
 
-func (app *ExpressObject) Listen(port int) {
+func (app *Express) Listen(port int) {
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		currentPath := r.URL.Path
+		log.Printf("%s `%s`\n", r.Method, currentPath)
+
 		isPathExists := app.routes.Contains(currentPath)
 		if !isPathExists {
 			response404Handler(w, r)
