@@ -17,12 +17,18 @@ func response404Handler(w http.ResponseWriter, r *http.Request) {
 
 func New() *Express {
 	return &Express{
-		routes:       []string{},
-		middlewares:  [](func(http.ResponseWriter, *http.Request)){},
-		getRoutes:    []string{},
-		postRoutes:   []string{},
-		getHandlers:  make(Route),
-		postHandlers: make(Route),
+		routes:         []string{},
+		middlewares:    [](func(http.ResponseWriter, *http.Request)){},
+		getRoutes:      []string{},
+		postRoutes:     []string{},
+		getHandlers:    make(Route),
+		postHandlers:   make(Route),
+		putRoutes:      []string{},
+		putHandlers:    make(Route),
+		patchRoutes:    []string{},
+		patchHandlers:  make(Route),
+		deleteRoutes:   []string{},
+		deleteHandlers: make(Route),
 	}
 }
 
@@ -40,6 +46,24 @@ func (app *Express) Post(pathname string, handler Handler) {
 	app.postHandlers[pathname] = handler
 	app.routes.Add(pathname)
 	app.postRoutes.Add(pathname)
+}
+
+func (app *Express) Put(pathname string, handler Handler) {
+	app.putHandlers[pathname] = handler
+	app.routes.Add(pathname)
+	app.putRoutes.Add(pathname)
+}
+
+func (app *Express) Patch(pathname string, handler Handler) {
+	app.patchHandlers[pathname] = handler
+	app.routes.Add(pathname)
+	app.patchRoutes.Add(pathname)
+}
+
+func (app *Express) Delete(pathname string, handler Handler) {
+	app.deleteHandlers[pathname] = handler
+	app.routes.Add(pathname)
+	app.deleteRoutes.Add(pathname)
 }
 
 func (app *Express) Listen(port int) {
@@ -64,6 +88,25 @@ func (app *Express) Listen(port int) {
 		if r.Method == http.MethodPost && app.postRoutes.Contains(currentPath) {
 			postHandler := app.postHandlers[currentPath]
 			postHandler(w, r)
+			return
+		}
+
+		if r.Method == http.MethodPut && app.putRoutes.Contains(currentPath) {
+			putHandler := app.putHandlers[currentPath]
+			putHandler(w, r)
+			return
+		}
+
+		if r.Method == http.MethodPatch && app.patchRoutes.Contains(currentPath) {
+			patchHandler := app.patchHandlers[currentPath]
+			patchHandler(w, r)
+			return
+		}
+
+		// DELETE
+		if r.Method == http.MethodDelete && app.deleteRoutes.Contains(currentPath) {
+			deleteHandler := app.deleteHandlers[currentPath]
+			deleteHandler(w, r)
 			return
 		}
 
