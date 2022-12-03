@@ -69,8 +69,6 @@ func (app *Express) Listen(port int) {
 		}
 
 		currentPath := r.URL.Path
-		log.Printf("%s `%s`\n", r.Method, currentPath)
-
 		isPathExists := app.routes.Contains(currentPath)
 		if !isPathExists {
 			response404Handler(w, r)
