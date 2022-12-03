@@ -16,6 +16,7 @@ func SampleCustomMiddleware(w http.ResponseWriter, r *http.Request) {
 
 func main() {
 	app := express.New()
+	app.Use(express.Cors)
 	app.Use(express.LogPathAccess)
 	app.Use(SampleCustomMiddleware)
 
