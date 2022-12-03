@@ -1,3 +1,4 @@
+// TODO: use self-balancing tree as a set
 package express
 
 type StringSet []string
