@@ -64,23 +64,15 @@ func (app *ExpressObject) Listen(port int) {
 			return
 		}
 
-		if r.Method == http.MethodGet {
-			if app.getRoutes.Contains(currentPath) {
-				getHandler := app.getHandlers[currentPath]
-				getHandler(w, r)
-			} else {
-				response404Handler(w, r)
-			}
+		if r.Method == http.MethodGet && app.getRoutes.Contains(currentPath) {
+			getHandler := app.getHandlers[currentPath]
+			getHandler(w, r)
 			return
 		}
 
-		if r.Method == http.MethodPost {
-			if app.postRoutes.Contains(currentPath) {
-				postHandler := app.postHandlers[currentPath]
-				postHandler(w, r)
-			} else {
-				response404Handler(w, r)
-			}
+		if r.Method == http.MethodPost && app.postRoutes.Contains(currentPath) {
+			postHandler := app.postHandlers[currentPath]
+			postHandler(w, r)
 			return
 		}
 
